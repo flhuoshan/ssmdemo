@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="xxx.yyy.zzz.dao.TecherExamRelaMapper">
+  <resultMap id="BaseResultMap" type="xxx.yyy.zzz.entity.TecherExamRelaKey">
+    <id column="teacherid" jdbcType="VARCHAR" property="teacherid" />
+    <id column="examid" jdbcType="VARCHAR" property="examid" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    teacherid, examid
+  </sql>
+  <select id="selectByExample" parameterType="xxx.yyy.zzz.entity.TecherExamRelaExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from techer_exam_rela
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="xxx.yyy.zzz.entity.TecherExamRelaKey">
+    delete from techer_exam_rela
+    where teacherid = #{teacherid,jdbcType=VARCHAR}
+      and examid = #{examid,jdbcType=VARCHAR}
+  </delete>
+  <delete id="deleteByExample" parameterType="xxx.yyy.zzz.entity.TecherExamRelaExample">
+    delete from techer_exam_rela
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="xxx.yyy.zzz.entity.TecherExamRelaKey">
+    insert into techer_exam_rela (teacherid, examid)
+    values (#{teacherid,jdbcType=VARCHAR}, #{examid,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="xxx.yyy.zzz.entity.TecherExamRelaKey">
+    insert into techer_exam_rela
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="teacherid != null">
+        teacherid,
+      </if>
+      <if test="examid != null">
+        examid,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="teacherid != null">
+        #{teacherid,jdbcType=VARCHAR},
+      </if>
+      <if test="examid != null">
+        #{examid,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="xxx.yyy.zzz.entity.TecherExamRelaExample" resultType="java.lang.Long">
+    select count(*) from techer_exam_rela
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update techer_exam_rela
+    <set>
+      <if test="record.teacherid != null">
+        teacherid = #{record.teacherid,jdbcType=VARCHAR},
+      </if>
+      <if test="record.examid != null">
+        examid = #{record.examid,jdbcType=VARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update techer_exam_rela
+    set teacherid = #{record.teacherid,jdbcType=VARCHAR},
+      examid = #{record.examid,jdbcType=VARCHAR}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+</mapper>

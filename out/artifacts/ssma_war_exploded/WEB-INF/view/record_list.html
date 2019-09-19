@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>考试安排列表</title>
+    <style type="text/css">
+
+    </style>
+    <script src="../../plugin/easyui/jquery.min.js"></script>
+    <script src="../../plugin/easyui/jquery.easyui.min.js"></script>
+    <link rel="stylesheet" href="../../plugin/easyui/themes/default/easyui.css">
+    <link rel="stylesheet" href="../../plugin/easyui/themes/icon.css">
+    <script src="../../plugin/easyui/plugins/jquery.datagrid.js"></script>
+    <script src="../../plugin/easyui/locale/easyui-lang-zh_CN.js"></script>
+
+
+</head>
+<body>
+<!--<div style="margin:20px 0;">-->
+<!--<a href="javascript:void(0)" class="easyui-linkbutton" onclick="$('#w').window('open')">Open</a>-->
+<!--<a href="javascript:void(0)" class="easyui-linkbutton" onclick="$('#w').window('close')">Close</a>-->
+<!--</div>-->
+<!--<div id="w" class="easyui-window" title="Modal Window" data-options="modal:true,closed:true,iconCls:'icon-save'" style="width:500px;height:200px;padding:10px;">-->
+<!--The window content.-->
+<!--</div>-->
+
+<div style="margin:20px 0;"></div>
+<div class="easyui-panel" title="查询" style="width:100%;padding:30px 60px;">
+    <form id="ff" method="post">
+        <div style="margin-bottom:20px">
+            <input id="location" class="easyui-textbox" name="location" style="width:100%"
+                   data-options="label:'地点:',required:false"/>
+        </div>
+
+    </form>
+    <div style="text-align:center;padding:5px 0">
+        <a href="javascript:void(0)" class="easyui-linkbutton" onclick="submit()" style="width:80px">Submit</a>
+        <a href="javascript:void(0)" class="easyui-linkbutton" onclick="clearForm()" style="width:80px">Clear</a>
+    </div>
+</div>
+
+<table id="dg" class="easyui-datagrid" title="操作" style="height:500px"
+       data-options="toolbar: '#tb',singleSelect:true,collapsible:true,url:'/record/list',method:'get'">
+    <thead>
+    <tr>
+
+        <th data-options="field:'examno'">考场号</th>
+        <th data-options="field:'starttime',align:'right'">开始时间</th>
+        <th data-options="field:'endtime',align:'right'">结束时间</th>
+        <th data-options="field:'location'">位置</th>
+        <th data-options="field:'teacherid',align:'center'">教师编号</th>
+        <th data-options="field:'teachername',align:'center'">教师名称</th>
+        <th data-options="field:'remark',align:'center'">备注</th>
+        <th data-options="field:'caozuo',align:'center'">操作</th>
+
+    </tr>
+    </thead>
+</table>
+
+<div id="tb" style="height:auto">
+    <a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-add',plain:true"
+       onclick="$('#w').window('open')">添加</a>
+    <a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-remove',plain:true"
+       onclick="removeit()">删除</a>
+    <a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-save',plain:true"
+       onclick="accept()">保存</a>
+</div>
+
+
+<div id="w" class="easyui-window" title="添加考试安排" data-options="modal:true,closed:true,iconCls:'icon-save'"
+     style="width:500px;height:500px;padding:10px;">
+    <form id="ff1" method="post">
+        <div style="margin-bottom:10px">
+            <input class="easyui-textbox" name="examno" style="width:100%" data-options="label:'考场编号:'">
+        </div>
+        <div style="margin-bottom:10px">
+            <input class="easyui-datetimebox" name="starttime" style="width:100%"
+                   data-options="label:'开始时间:',required:true,format:'yyyy-MM-dd HH:MM:SS'">
+        </div>
+        <div style="margin-bottom:10px">
+            <input class="easyui-datetimebox" name="endtime" style="width:100%"
+                   data-options="label:'结束时间:',required:true,format:'yyyy-MM-dd HH:MM:SS'">
+        </div>
+        <div style="margin-bottom:10px">
+            <input id="teacherid" class="easyui-combobox" name="teacherid" style="width:100%;" data-options="
+					url:'/teacher/list',
+					method:'get',
+					valueField:'value',
+					textField:'text',
+					multiple:true,
+					panelHeight:'auto',
+					label: '监考老师:',
+					labelPosition: 'left'
+					">
+        </div>
+
+        <div style="text-align:center;padding:5px 0">
+            <a href="javascript:void(0)" class="easyui-linkbutton" onclick="add()" style="width:80px">添加</a>
+        </div>
+    </form>
+</div>
+
+
+</body>
+
+
+<script type="text/javascript">
+
+
+    function loadRemote() {
+
+        $('#ff1').form('load', 'form_data1.json');
+    }
+
+    function clearForm() {
+        $('#ff1').form('clear');
+    }
+
+    var add = function () {
+        var formArr = $("#ff1").serializeArray();
+        console.log(formArr);
+        var formObj = {};
+        for (var i = 0; i < formArr.length; i++) {
+            formObj[formArr[i].name] = formArr[i].value;
+        }
+        formObj["teacherid"] = $("#teacherid").combobox("getValues");
+
+        console.log(JSON.stringify(formObj));
+
+        // $.each(formArr, function () {
+        //
+        // });
+        $.ajax({
+            method: "post",
+            url: "/record/add",
+            data: {
+                "params": JSON.stringify(formObj)
+            },
+            dataType: "json",
+            success: function (data) {
+                $("#w").window("close");
+                $("#dg").datagrid("load", {
+                    location: $("#location").val()
+                });
+            },
+            error: function (data) {
+                alert("添加失败");
+            }
+        });
+
+    };
+
+    var submit = function () {
+        $("#dg").datagrid('load', {
+            location: $("#location").val()
+        });
+    };
+
+    $(function () {
+        // $("#dg").datagrid({
+        //
+        // });
+        // var a = 1;
+        // console.log(456);
+        //
+        // $.ajax({
+        //     "url":"/record/list",
+        //     "data":{},
+        //     "method":"get",
+        //     "success":function (data) {
+        //         console.log(data);
+        //     },
+        //     "error":{
+        //
+        //     }
+        // })
+    });
+
+
+</script>
+</html>
