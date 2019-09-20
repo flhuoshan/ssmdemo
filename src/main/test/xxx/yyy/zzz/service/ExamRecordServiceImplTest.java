@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import xxx.yyy.zzz.entity.ExamRecord;
+import xxx.yyy.zzz.vo.ExamRecordVO;
 
 import java.util.List;
 
@@ -24,7 +25,7 @@ public class ExamRecordServiceImplTest {
 
     @Test
     public void listExamRecord() {
-        List<ExamRecord> examRecordList = examRecordService.listExamRecord("");
+        List<ExamRecordVO> examRecordList = examRecordService.listExamRecord("");
         System.out.println("size " + examRecordList.size());
     }
 }

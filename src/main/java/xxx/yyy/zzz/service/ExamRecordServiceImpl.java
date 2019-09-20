@@ -1,9 +1,11 @@
 package xxx.yyy.zzz.service;
 
 import org.springframework.stereotype.Service;
+import xxx.yyy.zzz.dao.CustomMapper;
 import xxx.yyy.zzz.dao.ExamRecordMapper;
 import xxx.yyy.zzz.entity.ExamRecord;
-import xxx.yyy.zzz.entity.ExamRecordExample;
+import xxx.yyy.zzz.vo.ExamRecordVO;
+
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -13,6 +15,9 @@ public class ExamRecordServiceImpl implements IExamRecordService {
 
     @Resource
     ExamRecordMapper examRecordMapper;
+
+    @Resource
+    CustomMapper customMapper;
 
     @Override
     public boolean addExamRecord(ExamRecord record) {
@@ -24,13 +29,10 @@ public class ExamRecordServiceImpl implements IExamRecordService {
 
 
     @Override
-    public List<ExamRecord> listExamRecord(String location) {
-
-        ExamRecordExample example = new ExamRecordExample();
-        if(location != null && !location.isEmpty()){
-            example.createCriteria().andLocationLike(location);
+    public List<ExamRecordVO> listExamRecord(String location) {
+        if(location == null || location.isEmpty()){
+            return customMapper.listExamRecord(location);
         }
-
-        return examRecordMapper.selectByExample(example);
+        return customMapper.listExamRecord(null);
     }
 }

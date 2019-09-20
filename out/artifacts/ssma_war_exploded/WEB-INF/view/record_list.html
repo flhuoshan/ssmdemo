@@ -34,22 +34,29 @@
 
     </form>
     <div style="text-align:center;padding:5px 0">
-        <a href="javascript:void(0)" class="easyui-linkbutton" onclick="submit()" style="width:80px">Submit</a>
-        <a href="javascript:void(0)" class="easyui-linkbutton" onclick="clearForm()" style="width:80px">Clear</a>
+        <a href="javascript:void(0)" class="easyui-linkbutton" onclick="submit()" style="width:80px">查询</a>
     </div>
 </div>
 
 <table id="dg" class="easyui-datagrid" title="操作" style="height:500px"
-       data-options="toolbar: '#tb',singleSelect:true,collapsible:true,url:'/record/list',method:'get'">
+       data-options="toolbar: '#tb',
+       pagination:true,
+		pageSize:10,
+		rownumbers:true,
+		singleSelect:true,
+		collapsible:true,
+		url:'/record/list',
+		method:'get'">
     <thead>
     <tr>
 
         <th data-options="field:'examno'">考场号</th>
-        <th data-options="field:'starttime',align:'right'">开始时间</th>
-        <th data-options="field:'endtime',align:'right'">结束时间</th>
+        <th data-options="field:'starttime',align:'right',formatter:myformatter">开始时间</th>
+        <th
+                data-options="field:'endtime',align:'right',formatter:myformatter">结束时间</th>
         <th data-options="field:'location'">位置</th>
-        <th data-options="field:'teacherid',align:'center'">教师编号</th>
-        <th data-options="field:'teachername',align:'center'">教师名称</th>
+        <th data-options="field:'teacherids',align:'center'">教师编号</th>
+        <th data-options="field:'teachernames',align:'center'">教师名称</th>
         <th data-options="field:'remark',align:'center'">备注</th>
         <th data-options="field:'caozuo',align:'center'">操作</th>
 
@@ -59,11 +66,11 @@
 
 <div id="tb" style="height:auto">
     <a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-add',plain:true"
-       onclick="$('#w').window('open')">添加</a>
+       onclick="$('#w').window('open')">新增</a>
     <a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-remove',plain:true"
        onclick="removeit()">删除</a>
     <a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-save',plain:true"
-       onclick="accept()">保存</a>
+       onclick="accept()">编辑</a>
 </div>
 
 
@@ -71,18 +78,18 @@
      style="width:500px;height:500px;padding:10px;">
     <form id="ff1" method="post">
         <div style="margin-bottom:10px">
-            <input class="easyui-textbox" name="examno" style="width:100%" data-options="label:'考场编号:'">
+            <input class="easyui-textbox" name="examno" style="width:100%" data-options="label:'考场编号:',required:true">
         </div>
         <div style="margin-bottom:10px">
             <input class="easyui-datetimebox" name="starttime" style="width:100%"
-                   data-options="label:'开始时间:',required:true,format:'yyyy-MM-dd HH:MM:SS'">
+                   data-options="label:'开始时间:',required:true">
         </div>
         <div style="margin-bottom:10px">
             <input class="easyui-datetimebox" name="endtime" style="width:100%"
-                   data-options="label:'结束时间:',required:true,format:'yyyy-MM-dd HH:MM:SS'">
+                   data-options="label:'结束时间:',required:true">
         </div>
         <div style="margin-bottom:10px">
-            <input id="teacherid" class="easyui-combobox" name="teacherid" style="width:100%;" data-options="
+            <input id="teacherids" class="easyui-combobox" name="teacherid" style="width:100%;" data-options="
 					url:'/teacher/list',
 					method:'get',
 					valueField:'value',
@@ -90,7 +97,8 @@
 					multiple:true,
 					panelHeight:'auto',
 					label: '监考老师:',
-					labelPosition: 'left'
+					labelPosition: 'left',
+					required:true
 					">
         </div>
 
@@ -106,6 +114,16 @@
 
 <script type="text/javascript">
 
+    function myformatter(date){
+        var date = new Date(date);
+        var y = date.getFullYear();
+        var m = date.getMonth()+1;
+        var d = date.getDate();
+        var hh = date.getHours();
+        var mm = date.getMinutes();
+        var ss = date.getSeconds();
+        return y+'-'+(m<10?('0'+m):m)+'-'+(d<10?('0'+d):d)+' '+(hh<10?('0'+hh):hh)+':'+(mm<10?('0'+mm):mm)+':'+(ss<10?('0'+ss):ss);
+    }
 
     function loadRemote() {
 
@@ -117,26 +135,25 @@
     }
 
     var add = function () {
+        var result = $("#ff1").form('enableValidation').form('validate');
+
+        if(result === false){
+            return;
+        }
         var formArr = $("#ff1").serializeArray();
-        console.log(formArr);
         var formObj = {};
         for (var i = 0; i < formArr.length; i++) {
             formObj[formArr[i].name] = formArr[i].value;
         }
-        formObj["teacherid"] = $("#teacherid").combobox("getValues");
 
-        console.log(JSON.stringify(formObj));
-
-        // $.each(formArr, function () {
-        //
-        // });
         $.ajax({
             method: "post",
             url: "/record/add",
             data: {
-                "params": JSON.stringify(formObj)
+                "params":JSON.stringify(formObj),
+                "teacherids":JSON.stringify($("#teacherids").combobox("getValues"))
             },
-            dataType: "json",
+            dataType: 'json',
             success: function (data) {
                 $("#w").window("close");
                 $("#dg").datagrid("load", {

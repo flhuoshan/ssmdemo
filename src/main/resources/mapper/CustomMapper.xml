@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="xxx.yyy.zzz.dao.CustomMapper">
+    <resultMap id="examResultMap" type="xxx.yyy.zzz.vo.ExamRecordVO">
+        <id column="examid"  property="examid" />
+        <result column="examno"  property="examno" />
+        <result column="starttime" jdbcType="TIMESTAMP" property="starttime" />
+        <result column="endtime" jdbcType="TIMESTAMP" property="endtime" />
+        <result column="location" jdbcType="VARCHAR" property="location" />
+        <result column="teacherids" jdbcType="VARCHAR" property="teacherid" />
+        <result column="remark" jdbcType="VARCHAR" property="remark" />
+        <collection property="teachernames" ofType="java.lang.String">
+            <result column="teachername" property="teachername" />
+        </collection>
+        <collection property="teacherids" ofType="java.lang.String">
+            <result column="teacherid" property="teacherid" />
+        </collection>
+    </resultMap>
+
+    <select id="listExamRecord" parameterType="java.lang.String" resultMap="examResultMap">
+      select a.examid,a.examno,a.starttime,a.endtime,a.location,c.name as teachername, c.teacherid, a.remark from exam_record a , techer_exam_rela b , teacher c
+      where a.examid = b.examid and b.teacherid = c.teacherid
+        <if test="location != null">
+            and a.location like #{location}
+        </if>
+
+  </select>
+</mapper>
